@@ -5,6 +5,8 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -39,30 +41,25 @@ public class Db {
         }
     }
     // the login should check if is admin to redirect to the admin page or user page
-    public void login(String email, String password) {
+    public Boolean login(String email, String password) {
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement stmt = connection.prepareStatement(LOGIN_QUERY)) {
 
-        
-        stmt.setString(1, email);
-        stmt.setString(2, password); 
+            stmt.setString(1, email);
+            stmt.setString(2, password);
 
-        ResultSet rs = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
 
-        if (rs.next()) {
-            // If result exists, login is successful
-            boolean isAdmin = rs.getBoolean("is_admin");
-            if (isAdmin) {
-                // Redirect to admin page
+            if (rs.next()) {
+                return rs.getBoolean("is_admin"); // Return admin status
             } else {
-                // Redirect to user page
+                return null; // Login failed
             }
-        } 
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
     }
-        
 
     public void createUnits(String code, String name) {
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
@@ -87,16 +84,22 @@ public class Db {
         }
     }
 
-    public void readUnitsForUsers(int userId) {
+    
+    public List<String> readUnitsForUsers(int userId) {
+        List<String> units = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(READ_UNITS_FOR_USERS)) {
             preparedStatement.setInt(1, userId);
-            preparedStatement.executeQuery();
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                units.add(rs.getString("name"));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return units;
     }
-
     public void dropUnitsForStudents(int userId, int unitId) {
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(DROP_UNITS_FOR_STUDENTS)) {
@@ -120,14 +123,20 @@ public class Db {
         }
     }
 
-    public void readGradesForUsers(int userId) {
+    public List<String> readGradesForUsers(int userId) {
+        List<String> grades = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(READ_GRADES_FOR_USERS)) {
             preparedStatement.setInt(1, userId);
-            preparedStatement.executeQuery();
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                grades.add(rs.getString("grade"));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return grades;
     }
 
     public void createFees(int userId, boolean paid) {
@@ -141,14 +150,20 @@ public class Db {
         }
     }
 
-    public void readFeesForUsers(int userId) {
+    public List<Boolean> readFeesForUsers(int userId) {
+        List<Boolean> fees = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(READ_FEES_FOR_USERS)) {
             preparedStatement.setInt(1, userId);
-            preparedStatement.executeQuery();
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                fees.add(rs.getBoolean("paid"));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return fees;
     }
 
     public void updateFeesForUsers(int userId) {
