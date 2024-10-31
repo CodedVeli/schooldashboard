@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 public class AdminPage extends Application {
 
-    private Db database = new Db(); // instance of Db class to access database methods
+    private Db database = new Db(); 
 
     @Override
     public void start(Stage primaryStage) {
@@ -64,14 +64,12 @@ public class AdminPage extends Application {
         // View All Students Button
         Button viewStudentsButton = new Button("View All Students");
         viewStudentsButton.setOnAction(e -> {
-            // Logic to fetch and display all students
         });
         grid.add(viewStudentsButton, 0, 6);
 
         // View All Units Button
         Button viewUnitsButton = new Button("View All Units");
         viewUnitsButton.setOnAction(e -> {
-            // Logic to fetch and display all units
         });
         grid.add(viewUnitsButton, 1, 6);
 
@@ -134,7 +132,7 @@ public class AdminPage extends Application {
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    // public static void main(String[] args) {
+    //     launch(args);
+    // }
 }

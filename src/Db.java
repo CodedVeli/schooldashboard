@@ -1,7 +1,5 @@
 // connecting to the database 
 // This is school dashboard user can add or drop a unit user and units that when a user drops units they are only disassociated with the user not delete  also the there relationship of the grades with user and unit  also a create a relationship of user  and create fees table whether paid or not paid by user 
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Db {
-
     private static final String DATABASE_URL = "jdbc:mysql://localhost/school";
 	private static final String DATABASE_USERNAME = "root";
 	private static final String DATABASE_PASSWORD = "root";
@@ -40,18 +37,20 @@ public class Db {
             e.printStackTrace();
         }
     }
-    // the login should check if is admin to redirect to the admin page or user page
-    public Boolean login(String email, String password) {
+  // the login should check if is admin to redirect to the admin page or user page
+    public LoginResult login(String email, String password) {
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement stmt = connection.prepareStatement(LOGIN_QUERY)) {
-
+    
             stmt.setString(1, email);
             stmt.setString(2, password);
-
+    
             ResultSet rs = stmt.executeQuery();
-
+    
             if (rs.next()) {
-                return rs.getBoolean("is_admin"); // Return admin status
+                int userId = rs.getInt("id"); // Assuming "id" is the column name for user id
+                boolean isAdmin = rs.getBoolean("is_admin");
+                return new LoginResult(userId, isAdmin); // Return both userId and admin status
             } else {
                 return null; // Login failed
             }
@@ -60,7 +59,6 @@ public class Db {
             return null;
         }
     }
-
     public void createUnits(String code, String name) {
         try (Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(CREATE_UNITS)) {
